@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
-import { ValidationPipe } from '@nestjs/common';
+import { DefaultValuePipe, ValidationPipe } from '@nestjs/common';
 import 'dotenv/config';
 
 async function bootstrap() {
@@ -11,6 +11,7 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
     }),
+    new DefaultValuePipe(null),
   );
   await app.listen(process.env.PORT ?? 4000);
 }

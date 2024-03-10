@@ -1,12 +1,18 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import { User } from './user.interface';
 
 export class UserEntity implements User {
+  @ApiProperty({ format: 'uuid' })
   readonly id: string; // uuid v4
+  @ApiProperty()
   readonly login: string;
+  @ApiProperty({ default: 1 })
   version: number; // integer number, increments on update
+  @ApiProperty({ default: Date.now() })
   createdAt: number; // timestamp of creation
+  @ApiProperty({ default: Date.now() })
   updatedAt: number; // timestamp of last update
 
   @Exclude()

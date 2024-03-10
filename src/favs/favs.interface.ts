@@ -1,6 +1,7 @@
-import { Album } from 'src/album/album.interface';
-import { Artist } from 'src/artist/artist.interface';
-import { Track } from 'src/track/track.interface';
+import { ApiProperty } from '@nestjs/swagger';
+import { AlbumEntity } from 'src/album/album.entity';
+import { ArtistEntity } from 'src/artist/artist.entity';
+import { TrackEntity } from 'src/track/track.entity';
 
 export interface Favorites {
   artists: string[]; // favorite artists ids
@@ -8,8 +9,11 @@ export interface Favorites {
   tracks: string[]; // favorite tracks ids
 }
 
-export interface FavoritesResponse {
-  artists: Artist[];
-  albums: Album[];
-  tracks: Track[];
+export class FavoritesResponse {
+  @ApiProperty({ type: [ArtistEntity] })
+  artists: ArtistEntity[];
+  @ApiProperty({ type: [AlbumEntity] })
+  albums: AlbumEntity[];
+  @ApiProperty({ type: [TrackEntity] })
+  tracks: TrackEntity[];
 }

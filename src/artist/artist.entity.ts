@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { randomUUID } from 'crypto';
-import { AlbumEntity } from 'src/album/album.entity';
-import { TrackEntity } from 'src/track/track.entity';
 import { Artist } from './artist.interface';
 
 export class ArtistEntity implements Artist {

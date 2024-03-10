@@ -559,10 +559,10 @@ components:
           default: 1
         createdAt:
           type: number
-          default: 1710111613027
+          default: 1710111815620
         updatedAt:
           type: number
-          default: 1710111613027
+          default: 1710111815620
       required:
         - id
         - login

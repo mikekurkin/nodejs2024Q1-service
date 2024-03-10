@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ArtistService } from 'src/artist/artist.service';
 import { TrackService } from 'src/track/track.service';
 import { AlbumEntity } from './album.entity';
 import { Album } from './album.interface';

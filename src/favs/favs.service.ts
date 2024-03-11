@@ -7,8 +7,8 @@ import { Favorites, FavoritesResponse } from './favs.interface';
 @Injectable()
 export class FavsService {
   constructor(
-    private readonly trackService: TrackService,
     private readonly albumService: AlbumService,
+    private readonly trackService: TrackService,
     private readonly artistService: ArtistService,
   ) {}
 
@@ -48,7 +48,7 @@ export class FavsService {
     const track = await this.trackService.findOne(trackId).catch(() => {
       return Promise.reject();
     });
-    this.favs.tracks.push(track.id);
+    if (!this.favs.tracks.includes(track.id)) this.favs.tracks.push(track.id);
   }
 
   async removeTrack(trackId: string): Promise<void> {
@@ -61,7 +61,8 @@ export class FavsService {
     const artist = await this.artistService.findOne(artistId).catch(() => {
       return Promise.reject();
     });
-    this.favs.artists.push(artist.id);
+    if (!this.favs.artists.includes(artist.id))
+      this.favs.artists.push(artist.id);
   }
 
   async removeArtist(artistId: string): Promise<void> {
@@ -74,7 +75,7 @@ export class FavsService {
     const album = await this.albumService.findOne(albumId).catch(() => {
       return Promise.reject();
     });
-    this.favs.albums.push(album.id);
+    if (!this.favs.albums.includes(album.id)) this.favs.albums.push(album.id);
   }
 
   async removeAlbum(albumId: string): Promise<void> {

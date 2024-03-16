@@ -1,4 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { verifyPassword } from 'src/common/crypto';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserEntity } from './user.entity';
@@ -6,37 +9,43 @@ import { User } from './user.interface';
 
 @Injectable()
 export class UserService {
-  private readonly users: User[] = [];
+  constructor(
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
+  ) {}
 
   async create(dto: CreateUserDto): Promise<User> {
     const user = new UserEntity({ ...dto });
-    this.users.push(user);
+    await user.setPassword(dto.password);
+    await this.usersRepository.save(user);
     return await this.findOne(user.id);
   }
 
   async findAll(): Promise<User[]> {
-    return this.users;
+    return this.usersRepository.find();
   }
 
   async findOne(id: string): Promise<User> {
-    return this.users.find((user) => user.id == id) ?? null;
+    return this.usersRepository.findOneBy({ id });
   }
 
   async updatePassword(
     id: string,
     { oldPassword, newPassword }: UpdatePasswordDto,
   ): Promise<User> {
-    const user = this.users.find((user) => user.id == id);
+    const user = await this.usersRepository.findOneBy({ id });
     if (user) {
-      if (user.password != oldPassword) return Promise.reject();
-      user.password = newPassword;
+      if (!(await verifyPassword(oldPassword, user.passwordHash)))
+        return Promise.reject();
+      await user.setPassword(newPassword);
+      await this.usersRepository.save(user);
     }
     return user;
   }
 
   async remove(id: string): Promise<void> {
-    const user = this.users.find((user) => user.id == id);
+    const user = await this.usersRepository.findOneBy({ id });
     if (!user) return Promise.reject();
-    this.users.splice(this.users.indexOf(user), 1);
+    this.usersRepository.remove([user]);
   }
 }

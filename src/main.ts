@@ -1,3 +1,6 @@
+import 'dotenv/config';
+import 'reflect-metadata';
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 
@@ -5,8 +8,6 @@ import { DefaultValuePipe, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { writeFile } from 'fs/promises';
 import { stringify as yamlStringify } from 'yaml';
-
-import 'dotenv/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -29,4 +30,5 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 4000);
 }
+
 bootstrap();

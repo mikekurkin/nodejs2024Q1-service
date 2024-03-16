@@ -7,10 +7,38 @@ services:
       dockerfile: Dockerfile
       args:
         port: ${PORT}
+    restart: always
+    depends_on:
+      - postgres
     volumes:
-      - ./:/usr/src/app
+      - ./src:/usr/src/app/src
+    networks:
+      - homelib-bridge
     expose:
       - ${PORT}
     ports:
       - ${PORT}:${PORT}
     env_file: .env
+    command: ["npm", "run", "start:dev"]
+
+  postgres:
+    build:
+      context: ./postgres
+      dockerfile: ./Dockerfile
+    restart: always
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    networks:
+      - homelib-bridge
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    expose:
+      - ${DB_PORT}
+    command:
+      ["postgres", "-c", "log_statement=all", "-c", "log_directory=logs", "-c", "logging_collector=on"]
+
+networks:
+  homelib-bridge:
+    name: homelib-bridge

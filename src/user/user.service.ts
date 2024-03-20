@@ -16,7 +16,6 @@ export class UserService {
 
   async create(dto: CreateUserDto): Promise<User> {
     const user = new UserEntity({ ...dto });
-    await user.setPassword(dto.password);
     await this.usersRepository.save(user);
     return await this.findOne(user.id);
   }
@@ -37,7 +36,7 @@ export class UserService {
     if (user) {
       if (!(await verifyPassword(oldPassword, user.passwordHash)))
         return Promise.reject();
-      await user.setPassword(newPassword);
+      user.password = newPassword;
       await this.usersRepository.save(user);
     }
     return user;

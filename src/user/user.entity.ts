@@ -2,6 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { hashPassword, verifyPassword } from 'src/common/crypto';
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -43,18 +45,22 @@ export class UserEntity implements User {
   @Column()
   passwordHash: string;
   @Exclude()
-  set password(newPassword: string) {}
+  set password(newPassword: string) {
+    this.passwordHash = null;
+    this.promises.push(
+      hashPassword(newPassword).then((hash) => (this.passwordHash = hash)),
+    );
+  }
+
   @Exclude()
-  setPassword = async (newPassword: string): Promise<void> => {
-    return new Promise(async (res) => {
-      if (
-        !this.passwordHash ||
-        !(await verifyPassword(newPassword, this.passwordHash))
-      )
-        this.passwordHash = await hashPassword(newPassword);
-      res();
-    });
-  };
+  @BeforeInsert()
+  @BeforeUpdate()
+  private async awaitReadiness() {
+    await Promise.allSettled(this.promises);
+  }
+
+  @Exclude()
+  private promises: Promise<any>[] = [];
 
   constructor(partial: Partial<UserEntity>) {
     Object.assign(this, partial);

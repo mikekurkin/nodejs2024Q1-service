@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { AlbumEntity } from 'src/album/album.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Artist } from './artist.interface';
 
 @Entity()
@@ -13,6 +15,10 @@ export class ArtistEntity implements Artist {
   @ApiProperty()
   @Column()
   grammy: boolean;
+
+  @Exclude()
+  @OneToMany(() => AlbumEntity, (album) => album.artist)
+  albums: AlbumEntity[];
 
   constructor(partial: Partial<ArtistEntity>) {
     Object.assign(this, partial);

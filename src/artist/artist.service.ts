@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AlbumService } from 'src/album/album.service';
+import { AlbumEntity } from 'src/album/album.entity';
 import { TrackService } from 'src/track/track.service';
 import { Repository } from 'typeorm';
 import { ArtistEntity } from './artist.entity';
@@ -14,7 +14,6 @@ export class ArtistService {
     @InjectRepository(ArtistEntity)
     private artistsRepository: Repository<ArtistEntity>,
     private readonly trackService: TrackService,
-    private readonly albumService: AlbumService,
   ) {}
 
   async create(dto: CreateArtistDto): Promise<Artist> {
@@ -33,12 +32,11 @@ export class ArtistService {
 
   async update(id: string, dto: UpdateArtistDto): Promise<Artist> {
     const artist = await this.artistsRepository.findOneBy({ id });
-    if (artist) {
-      Object.entries(dto).forEach(([key, value]) => (artist[key] = value));
-      const updatedArtist = { ...artist, ...dto };
-      await this.artistsRepository.save(updatedArtist);
-    }
-    return artist;
+    if (artist == null) return null;
+
+    const updatedArtist = { ...artist, ...dto };
+    await this.artistsRepository.save(updatedArtist);
+    return updatedArtist;
   }
 
   async remove(id: string): Promise<void> {
@@ -48,19 +46,7 @@ export class ArtistService {
     (await this.trackService.findByArtistId(id)).forEach(
       (track) => (track.artistId = null),
     );
-    (await this.albumService.findByArtistId(id)).forEach(
-      (album) => (album.artistId = null),
-    );
+
     this.artistsRepository.remove([artist]);
   }
-
-  // async findByTrackId(trackId: string): Promise<Artist> {
-  //   const { artistId } = await this.trackService.findOne(trackId);
-  //   return this.artists.find(async (artist) => artist.id == artistId);
-  // }
-
-  // async findByAlbumId(trackId: string): Promise<Artist> {
-  //   const { artistId } = await this.trackService.findOne(trackId);
-  //   return this.artists.find(async (artist) => artist.id == artistId);
-  // }
 }

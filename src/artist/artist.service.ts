@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { AlbumEntity } from 'src/album/album.entity';
-import { TrackService } from 'src/track/track.service';
-import { Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { ArtistEntity } from './artist.entity';
 import { Artist } from './artist.interface';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -11,9 +9,11 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 @Injectable()
 export class ArtistService {
   constructor(
-    @InjectRepository(ArtistEntity)
-    private artistsRepository: Repository<ArtistEntity>,
+    @InjectDataSource()
+    private dataSource: DataSource,
   ) {}
+
+  private artistsRepository = this.dataSource.getRepository(ArtistEntity);
 
   async create(dto: CreateArtistDto): Promise<Artist> {
     const artist = new ArtistEntity({ ...dto });
@@ -33,7 +33,7 @@ export class ArtistService {
     const artist = await this.artistsRepository.findOneBy({ id });
     if (artist == null) return null;
 
-    const updatedArtist = { ...artist, ...dto };
+    const updatedArtist = new ArtistEntity({ ...artist, ...dto });
     await this.artistsRepository.save(updatedArtist);
     return updatedArtist;
   }

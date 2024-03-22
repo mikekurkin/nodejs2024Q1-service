@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { AlbumEntity } from 'src/album/album.entity';
+import { TrackEntity } from 'src/track/track.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Artist } from './artist.interface';
 
@@ -19,6 +20,9 @@ export class ArtistEntity implements Artist {
   @Exclude()
   @OneToMany(() => AlbumEntity, (album) => album.artist)
   albums: AlbumEntity[];
+  @Exclude()
+  @OneToMany(() => TrackEntity, (track) => track.artist)
+  tracks: TrackEntity[];
 
   constructor(partial: Partial<ArtistEntity>) {
     Object.assign(this, partial);

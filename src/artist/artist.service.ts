@@ -13,7 +13,6 @@ export class ArtistService {
   constructor(
     @InjectRepository(ArtistEntity)
     private artistsRepository: Repository<ArtistEntity>,
-    private readonly trackService: TrackService,
   ) {}
 
   async create(dto: CreateArtistDto): Promise<Artist> {
@@ -42,10 +41,6 @@ export class ArtistService {
   async remove(id: string): Promise<void> {
     const artist = await this.artistsRepository.findOneBy({ id });
     if (!artist) return Promise.reject();
-
-    (await this.trackService.findByArtistId(id)).forEach(
-      (track) => (track.artistId = null),
-    );
 
     this.artistsRepository.remove([artist]);
   }

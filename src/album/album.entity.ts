@@ -2,10 +2,12 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import { ArtistEntity } from 'src/artist/artist.entity';
+import { TrackEntity } from 'src/track/track.entity';
 import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
@@ -29,6 +31,9 @@ export class AlbumEntity implements Album {
   @Exclude()
   @ManyToOne(() => ArtistEntity, (artist) => artist.albums)
   artist: ArtistEntity;
+  @Exclude()
+  @OneToMany(() => TrackEntity, (track) => track.album)
+  tracks: TrackEntity[];
 
   constructor(partial: Partial<AlbumEntity>) {
     Object.assign(this, partial);

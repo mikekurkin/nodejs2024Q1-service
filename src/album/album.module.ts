@@ -9,6 +9,6 @@ import { AlbumService } from './album.service';
   controllers: [AlbumController],
   providers: [AlbumService],
   exports: [AlbumService],
-  imports: [TrackModule, TypeOrmModule.forFeature([AlbumEntity])],
+  imports: [TypeOrmModule.forFeature([AlbumEntity])],
 })
 export class AlbumModule {}

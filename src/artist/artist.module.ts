@@ -9,6 +9,6 @@ import { ArtistService } from './artist.service';
   controllers: [ArtistController],
   providers: [ArtistService],
   exports: [ArtistService],
-  imports: [TrackModule, TypeOrmModule.forFeature([ArtistEntity])],
+  imports: [TypeOrmModule.forFeature([ArtistEntity])],
 })
 export class ArtistModule {}

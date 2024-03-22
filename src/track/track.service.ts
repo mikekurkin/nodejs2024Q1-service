@@ -49,7 +49,7 @@ export class TrackService {
     const artist = await this.artistsRepository.findOneBy({
       id: Equal(dto.artistId),
     });
-    const updatedTrack = { ...track, ...dto, album, artist };
+    const updatedTrack = new TrackEntity({ ...track, ...dto, album, artist });
     await this.tracksRepository.save(updatedTrack);
     return updatedTrack;
   }

@@ -29,7 +29,9 @@ export class AlbumEntity implements Album {
   artistId: string | null; // refers to Artist
 
   @Exclude()
-  @ManyToOne(() => ArtistEntity, (artist) => artist.albums)
+  @ManyToOne(() => ArtistEntity, (artist) => artist.albums, {
+    onDelete: 'SET NULL',
+  })
   artist: ArtistEntity;
   @Exclude()
   @OneToMany(() => TrackEntity, (track) => track.album)

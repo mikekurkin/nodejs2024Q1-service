@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { TrackService } from 'src/track/track.service';
-import { Repository } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { ArtistEntity } from 'src/artist/artist.entity';
+import { DataSource, Equal } from 'typeorm';
 import { AlbumEntity } from './album.entity';
 import { Album } from './album.interface';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -10,12 +10,18 @@ import { UpdateAlbumDto } from './dto/update-album.dto';
 @Injectable()
 export class AlbumService {
   constructor(
-    @InjectRepository(AlbumEntity)
-    private albumsRepository: Repository<AlbumEntity>,
+    @InjectDataSource()
+    private dataSource: DataSource,
   ) {}
 
+  private albumsRepository = this.dataSource.getRepository(AlbumEntity);
+  private artistsRepository = this.dataSource.getRepository(ArtistEntity);
+
   async create(dto: CreateAlbumDto): Promise<Album> {
-    const album = new AlbumEntity({ ...dto });
+    const artist = await this.artistsRepository.findOneBy({
+      id: Equal(dto.artistId),
+    });
+    const album = new AlbumEntity({ ...dto, artist });
     await this.albumsRepository.save(album);
     return album;
   }
@@ -32,7 +38,10 @@ export class AlbumService {
     const album = await this.albumsRepository.findOneBy({ id });
     if (album == null) return null;
 
-    const updatedAlbum = { ...album, ...dto };
+    const artist = await this.artistsRepository.findOneBy({
+      id: Equal(dto.artistId),
+    });
+    const updatedAlbum = new AlbumEntity({ ...album, ...dto, artist });
     await this.albumsRepository.save(updatedAlbum);
     return updatedAlbum;
   }

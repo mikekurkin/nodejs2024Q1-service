@@ -10,7 +10,7 @@ import { writeFile } from 'fs/promises';
 import { stringify as yamlStringify } from 'yaml';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { abortOnError: false });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

@@ -42,6 +42,6 @@ export class ArtistService {
     const artist = await this.artistsRepository.findOneBy({ id });
     if (!artist) return Promise.reject();
 
-    this.artistsRepository.remove([artist]);
+    await this.artistsRepository.remove([artist]);
   }
 }

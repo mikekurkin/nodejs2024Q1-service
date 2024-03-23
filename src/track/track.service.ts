@@ -58,6 +58,6 @@ export class TrackService {
     const track = await this.tracksRepository.findOneBy({ id });
     if (!track) return Promise.reject();
 
-    this.tracksRepository.remove([track]);
+    await this.tracksRepository.remove([track]);
   }
 }

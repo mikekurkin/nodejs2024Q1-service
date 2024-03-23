@@ -50,6 +50,6 @@ export class AlbumService {
     const album = await this.albumsRepository.findOneBy({ id });
     if (album == null) return Promise.reject();
 
-    this.albumsRepository.remove([album]);
+    await this.albumsRepository.remove([album]);
   }
 }

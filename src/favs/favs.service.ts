@@ -1,86 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import { AlbumService } from 'src/album/album.service';
-import { ArtistService } from 'src/artist/artist.service';
-import { TrackService } from 'src/track/track.service';
-import { Favorites, FavoritesResponse } from './favs.interface';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { AlbumEntity } from 'src/album/album.entity';
+import { ArtistEntity } from 'src/artist/artist.entity';
+import { TrackEntity } from 'src/track/track.entity';
+import { DataSource, Equal, In, Repository } from 'typeorm';
+import { EntityType, FavoriteEntity } from './favs.entity';
+import { FavoritesResponse } from './favs.interface';
 
 @Injectable()
 export class FavsService {
   constructor(
-    private readonly albumService: AlbumService,
-    private readonly trackService: TrackService,
-    private readonly artistService: ArtistService,
+    @InjectDataSource()
+    private dataSource: DataSource,
   ) {}
 
-  private readonly favs: Favorites = {
-    artists: [],
-    albums: [],
-    tracks: [],
+  repos = {
+    tracks: this.dataSource.getRepository(TrackEntity),
+    albums: this.dataSource.getRepository(AlbumEntity),
+    artists: this.dataSource.getRepository(ArtistEntity),
+    favs: this.dataSource.getRepository(FavoriteEntity),
   };
 
   async getFavs(): Promise<FavoritesResponse> {
-    return {
-      artists: (
-        await Promise.allSettled(
-          this.favs.artists.map((id) => this.artistService.findOne(id)),
-        )
-      ).flatMap((prm) =>
-        prm.status == 'fulfilled' && prm.value ? [prm.value] : [],
+    const favs = Object.fromEntries(
+      await Promise.all(
+        Object.entries<string[]>(
+          (
+            await this.repos.favs.find()
+          ).reduce((acc, { entityType, entityId }: FavoriteEntity) => {
+            acc[entityType] = acc[entityType] ?? [];
+            acc[entityType].push(entityId);
+            return acc;
+          }, {}),
+        ).map(async ([entityType, entityIds]) => [
+          entityType,
+          this.repos[entityType] instanceof Repository
+            ? await this.repos[entityType].find({
+                where: { id: In(entityIds) },
+              })
+            : null,
+        ]),
       ),
-      albums: (
-        await Promise.allSettled(
-          this.favs.albums.map((id) => this.albumService.findOne(id)),
-        )
-      ).flatMap((prm) =>
-        prm.status == 'fulfilled' && prm.value ? [prm.value] : [],
-      ),
-      tracks: (
-        await Promise.allSettled(
-          this.favs.tracks.map((id) => this.trackService.findOne(id)),
-        )
-      ).flatMap((prm) =>
-        prm.status == 'fulfilled' && prm.value ? [prm.value] : [],
-      ),
-    };
+    );
+    return favs as unknown as Promise<FavoritesResponse>;
   }
 
-  async addTrack(trackId: string): Promise<void> {
-    const track = await this.trackService.findOne(trackId).catch(() => {
+  async addEntity(entityId: string, entityType: EntityType) {
+    if (
+      !(await this.repos[entityType].exists({ where: { id: Equal(entityId) } }))
+    )
       return Promise.reject();
+    const entity = new FavoriteEntity({ entityId, entityType });
+    await this.repos.favs.save(entity);
+  }
+
+  async removeEntity(entityId: string, entityType: EntityType) {
+    const entity = await this.repos.favs.findOne({
+      where: { entityId: Equal(entityId), entityType: Equal(entityType) },
     });
-    if (!this.favs.tracks.includes(track.id)) this.favs.tracks.push(track.id);
-  }
-
-  async removeTrack(trackId: string): Promise<void> {
-    const favsIndex = this.favs.tracks.indexOf(trackId);
-    if (favsIndex == -1) return Promise.reject();
-    this.favs.tracks.splice(favsIndex, 1);
-  }
-
-  async addArtist(artistId: string): Promise<void> {
-    const artist = await this.artistService.findOne(artistId).catch(() => {
-      return Promise.reject();
-    });
-    if (!this.favs.artists.includes(artist.id))
-      this.favs.artists.push(artist.id);
-  }
-
-  async removeArtist(artistId: string): Promise<void> {
-    const favsIndex = this.favs.artists.indexOf(artistId);
-    if (favsIndex == -1) return Promise.reject();
-    this.favs.artists.splice(favsIndex, 1);
-  }
-
-  async addAlbum(albumId: string): Promise<void> {
-    const album = await this.albumService.findOne(albumId).catch(() => {
-      return Promise.reject();
-    });
-    if (!this.favs.albums.includes(album.id)) this.favs.albums.push(album.id);
-  }
-
-  async removeAlbum(albumId: string): Promise<void> {
-    const favsIndex = this.favs.albums.indexOf(albumId);
-    if (favsIndex == -1) return Promise.reject();
-    this.favs.albums.splice(favsIndex, 1);
+    if (entity == null) return Promise.reject();
+    await this.repos.favs.remove([entity]);
   }
 }

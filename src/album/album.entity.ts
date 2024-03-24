@@ -1,8 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { randomUUID } from 'crypto';
-import { ArtistEntity } from 'src/artist/artist.entity';
-import { TrackEntity } from 'src/track/track.entity';
 import {
   Column,
   Entity,
@@ -11,6 +9,8 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
+import { ArtistEntity } from '../artist/artist.entity';
+import { TrackEntity } from '../track/track.entity';
 import { Album } from './album.interface';
 
 @Entity()

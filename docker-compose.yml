@@ -2,6 +2,7 @@ version: '3'
 
 services:
   app:
+    image: nodejs-2024q1-service-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -20,6 +21,15 @@ services:
       - ${PORT}:${PORT}
     env_file: .env
     command: ["npm", "run", "start:dev"]
+
+  migrate:
+    image: nodejs-2024q1-service-app
+    depends_on:
+      - postgres
+    networks:
+      - homelib-bridge
+    env_file: .env
+    command: ["npm", "run", "migration:run"]
 
   postgres:
     build:
@@ -42,3 +52,4 @@ services:
 networks:
   homelib-bridge:
     name: homelib-bridge
+

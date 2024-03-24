@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { AlbumEntity } from 'src/album/album.entity';
-import { TrackEntity } from 'src/track/track.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { AlbumEntity } from '../album/album.entity';
+import { TrackEntity } from '../track/track.entity';
 import { Artist } from './artist.interface';
 
 @Entity()

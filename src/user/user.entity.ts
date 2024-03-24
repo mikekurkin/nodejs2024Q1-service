@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { hashPassword, verifyPassword } from 'src/common/crypto';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -11,6 +10,7 @@ import {
   UpdateDateColumn,
   VersionColumn,
 } from 'typeorm';
+import { hashPassword, verifyPassword } from '../common/crypto';
 import { User } from './user.interface';
 
 @Entity()

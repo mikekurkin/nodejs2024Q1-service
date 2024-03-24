@@ -1,7 +1,7 @@
-import { AlbumEntity } from 'src/album/album.entity';
-import { ArtistEntity } from 'src/artist/artist.entity';
-import { TrackEntity } from 'src/track/track.entity';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { AlbumEntity } from '../album/album.entity';
+import { ArtistEntity } from '../artist/artist.entity';
+import { TrackEntity } from '../track/track.entity';
 
 export const Entities = {
   artist: ArtistEntity,

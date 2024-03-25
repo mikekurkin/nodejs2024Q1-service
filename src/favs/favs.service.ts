@@ -27,11 +27,14 @@ export class FavsService {
         Object.entries<string[]>(
           (
             await this.repos.favs.find()
-          ).reduce((acc, { entityType, entityId }: FavoriteEntity) => {
-            acc[entityType] = acc[entityType] ?? [];
-            acc[entityType].push(entityId);
-            return acc;
-          }, {}),
+          ).reduce(
+            (acc, { entityType, entityId }: FavoriteEntity) => {
+              acc[entityType] = acc[entityType] ?? [];
+              acc[entityType].push(entityId);
+              return acc;
+            },
+            { albums: [], artists: [], tracks: [] },
+          ),
         ).map(async ([entityType, entityIds]) => [
           entityType,
           this.repos[entityType] instanceof Repository

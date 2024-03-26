@@ -36,6 +36,7 @@ services:
       context: ./postgres
       dockerfile: ./Dockerfile
     restart: always
+    user: root
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
     networks:

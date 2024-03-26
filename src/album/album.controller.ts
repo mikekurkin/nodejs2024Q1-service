@@ -21,9 +21,9 @@ import {
 } from '@nestjs/swagger';
 import { UUIDParam } from 'src/common/uuid';
 import { AlbumEntity } from './album.entity';
-import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { AlbumService } from './album.service';
 
 @ApiTags('Album')
 @Controller('album')

@@ -45,7 +45,7 @@ export class FavsController {
   })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   async addTrack(@Param() { id }: UUIDParam) {
-    await this.favsService.addTrack(id).catch(() => {
+    await this.favsService.addEntity(id, 'tracks').catch(() => {
       throw new UnprocessableEntityException(
         'Unprocessable entry: Track does not exist',
       );
@@ -62,7 +62,7 @@ export class FavsController {
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeTrack(@Param() { id }: UUIDParam) {
-    await this.favsService.removeTrack(id).catch(() => {
+    await this.favsService.removeEntity(id, 'tracks').catch(() => {
       throw new NotFoundException();
     });
   }
@@ -78,7 +78,7 @@ export class FavsController {
   })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   async addAlbum(@Param() { id }: UUIDParam) {
-    await this.favsService.addAlbum(id).catch(() => {
+    await this.favsService.addEntity(id, 'albums').catch(() => {
       throw new UnprocessableEntityException(
         'Unprocessable entry: Album does not exist',
       );
@@ -95,7 +95,7 @@ export class FavsController {
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeAlbum(@Param() { id }: UUIDParam) {
-    await this.favsService.removeAlbum(id).catch(() => {
+    await this.favsService.removeEntity(id, 'albums').catch(() => {
       throw new NotFoundException();
     });
   }
@@ -113,7 +113,7 @@ export class FavsController {
   })
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   async addArtist(@Param() { id }: UUIDParam) {
-    await this.favsService.addArtist(id).catch(() => {
+    await this.favsService.addEntity(id, 'artists').catch(() => {
       throw new UnprocessableEntityException(
         'Unprocessable entry: Artist does not exist',
       );
@@ -130,7 +130,7 @@ export class FavsController {
   @ApiParam({ name: 'id', type: 'string', format: 'uuid' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeArtist(@Param() { id }: UUIDParam) {
-    await this.favsService.removeArtist(id).catch(() => {
+    await this.favsService.removeEntity(id, 'artists').catch(() => {
       throw new NotFoundException();
     });
   }

@@ -1,0 +1,7 @@
+**/node_modules/
+**/dist/
+.git
+**/test/
+postgres/
+npm-debug.log
+.env

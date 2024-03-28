@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { ArtistModule } from './artist/artist.module';
 import { dataSourceOptions } from './db/config';
 import { FavsModule } from './favs/favs.module';
+import { LoggerModule } from './logger/logger.module';
 import { TrackModule } from './track/track.module';
 import { UserModule } from './user/user.module';
 
@@ -18,6 +19,7 @@ import { UserModule } from './user/user.module';
     TrackModule,
     FavsModule,
     TypeOrmModule.forRoot(dataSourceOptions),
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [

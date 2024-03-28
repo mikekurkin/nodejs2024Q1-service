@@ -8,9 +8,13 @@ import { DefaultValuePipe, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { writeFile } from 'fs/promises';
 import { stringify as yamlStringify } from 'yaml';
+import { LoggingService } from './logger/logger.service.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { abortOnError: false });
+  const app = await NestFactory.create(AppModule, {
+    abortOnError: false,
+    logger: new LoggingService(),
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
